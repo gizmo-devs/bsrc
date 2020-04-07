@@ -28,7 +28,7 @@ services:
       - "80:80"
     environment:
       - BSRC_APP_SETTINGS=/app-config/config.cfg
-      - VIRTUAL_HOST=dev-docker-bsrc.craigattwood.co.uk
+      - VIRTUAL_HOST=docker-bsrc.craigattwood.co.uk
       - FLASK_APP=app.main
       - FLASK_ENV=development
       - FLASK_DEBUG=1
