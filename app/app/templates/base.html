@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>{% block title %}{% endblock %} | Competition Tracker</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+  <script src="{{ url_for('static', filename='js/jquery-3.4.1.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="{{url_for('static', filename='icon/apple-touch-icon.png')}}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{url_for('static', filename='icon/favicon-32x32.png')}}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{url_for('static', filename='icon/favicon-16x16.png')}}">
+  <link rel="manifest" href="{{url_for('static', filename='icon/site.webmanifest')}}">
+  <link rel="mask-icon" href="{{url_for('static', filename='icon/safari-pinned-tab.svg')}}" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+
+</head>
+
+<body>
+<nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-top">
+  <a class="navbar-brand" href="/">Competition Tracker</a>
+    {% if config.APP_ENV|upper != 'PROD'%}
+      <span class="badge badge-warning" id="app_conf">{{config.APP_ENV}}</span>
+    {% endif %}
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+  <ul class="navbar-nav mr-auto">
+    <li class="nav-item">
+      <a class="nav-link" href="{{ url_for('competition.index') }}">Competitions</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{{ url_for('team.index') }}">Teams</a>
+    </li>
+    {% if g.user.permission_level == "admin" %}
+    <!-- Dropdown -->
+    <li class="nav-item">
+      <a class="nav-link" href="{{ url_for('user.home') }}">Users</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{{ url_for('import_data.index') }}">Import</a>
+    </li>
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+        Create
+      </a>
+      <div class="dropdown-menu">
+        <a class="dropdown-item" href="{{ url_for('team.team_create') }}">New Team</a>
+        <a class="dropdown-item" href="{{ url_for('competition.comp_create') }}">New Competition</a>
+        <a class="dropdown-item" href="{{ url_for('user.create') }}">New User</a>
+      </div>
+    </li>
+    {% endif %}
+  </ul>
+  <ul class="navbar-nav">
+    {% if g.user %}
+    <li class="nav-item">
+      <a class="nav-link" href="{{ url_for('user.user_stats', user_id=g.user['id']) }}" class="navbar-text">{{ g.user['username'] }}</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{{ url_for('auth.logout') }}">Log Out</a>
+    </li>
+    {% else %}
+    <li><a class="nav-link" href="{{ url_for('auth.register') }}">Register</a></li>
+    <li><a class="nav-link" href="{{ url_for('auth.login') }}">Log In</a></li>
+    {% endif %}
+  </ul>
+  </div>
+</nav>
+<section class="container mt-5 pt-4">
+  <header>
+    {% block header %}{% endblock %}
+  </header>
+  {% for message in get_flashed_messages() %}
+    <div class="toast">
+      <div class="toast-header">
+        Status
+      </div>
+      <div class="toast-body">
+        <div class="flash">{{ message }}</div>
+      </div>
+    </div>
+  {% endfor %}
+  {% block content %}{% endblock %}
+</section>
+
+<footer class="footer mt-2">
+  <div class="container">
+    <div class="d-flex justify-content-between">
+      <span class="text-muted">Created By Craig</span>
+      <span class="text-muted">Version 1.1.0</span>
+    </div>
+  </div>
+</footer>
+
+{% if get_flashed_messages() %}
+<script>
+$(document).ready(function(){
+  $('.toast').toast({animation: true, delay: 1750})
+  $('.toast').toast('show');
+});
+</script>
+{% endif %}
+{% if config.APP_ENV|upper != 'PROD'%}
+<div id="popver_details" class="d-none">
+<p><strong>Database:</strong> {{config.DB_HOST}}</p>
+<p><strong>Schema:</strong> {{config.DB_SCHEMA}}</p>
+</div>
+<script>
+  $('#app_conf').popover({
+    title: "App Config",
+    content: $('#popver_details').html(),
+    html: true,
+    placement: "bottom"
+  });
+</script>
+{% endif %}
+</body>
+<script src="{{ url_for('static', filename='js/wizardry.js') }}"></script>
+</html>

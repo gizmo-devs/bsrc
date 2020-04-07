@@ -1,0 +1,43 @@
+---
+version: '3'
+services:
+  alpine3.agent.postgres:
+    container_name: postgres-db
+    build:
+      context: .
+      dockerfile: ./agents/alpine3-agent-postgres/Dockerfile
+    ports:
+      - '5432:5432'
+    env_file:
+      - ./.env
+    volumes:
+      - './db-schema/init.db/:/docker-entrypoint-initdb.d/'
+
+  webapp:
+    depends_on:
+      - alpine3.agent.postgres
+    container_name: bsrc-webapp
+    build:
+      context: .
+      dockerfile: ./agents/webapp-agent-python3.7/Dockerfile
+    volumes:
+      - ./app:/app
+    # expose:
+    #   - 80
+    ports:
+      - "80:80"
+    environment:
+      - BSRC_APP_SETTINGS=/app-config/config.cfg
+      - VIRTUAL_HOST=dev-docker-bsrc.craigattwood.co.uk
+      - FLASK_APP=app.main
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+      - 'RUN=flask run --host=0.0.0.0 --port=80'
+      # command: flask run --host=0.0.0.0 --port=80
+      # Infinite loop, to keep it alive, for debugging
+      # command: bash -c "while true; do echo 'sleeping...' && sleep 10; done"
+
+# networks:
+#   default:
+#     external:
+#       name: nginx-proxy

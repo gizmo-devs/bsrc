@@ -1,0 +1,117 @@
+{
+  "competitions" : [{
+    "info": {
+      "id": 1,
+      "name": "winter-league",
+      "rounds": 18,
+      "season": "2019/20",
+      "round_due_dates": [
+        "12/10/2019",
+        "19/10/2019"
+      ]
+    },
+    "team_results": [
+      {
+        "name" : "Craig Attwood",
+        "scores": [
+          {
+            "round" : 1,
+            "est": 100,
+            "actual" : 100,
+            "date_shot" : "10/10/2019"
+          },
+          {
+            "round" : 2,
+            "est": 99,
+            "actual" : 98,
+            "date_shot" : "18/10/2019"
+          },
+          {
+            "round" : 3,
+            "est": 99,
+            "actual" : 100,
+            "date_shot" : "18/10/2019"
+          }
+        ]
+      },
+      {
+        "name" : "Dave Lemon",
+        "scores": [
+          {
+            "round" : 1,
+            "est": 100,
+            "actual" : 100,
+            "date_shot" : "11/10/2019"
+          },
+          {
+            "round" : 2,
+            "est": 100,
+            "actual" : 100,
+            "date_shot" : "12/10/2019"
+          }
+        ]
+      }
+    ]
+  },
+    {
+      "info": {
+        "name": "Winter League - B",
+        "id": 2,
+        "rounds": 10,
+        "season" : "2019/20",
+        "round_due_dates": {
+          "1": "12/10/2019",
+          "2": "19/10/2019"
+        }
+      },
+      "team_results": [
+        {
+          "name": "Craig Attwood",
+          "scores": [
+            {
+              "round": 1,
+              "est": 100,
+              "actual": 100,
+              "date_shot": "10/10/2019"
+            },
+            {
+              "round": 2,
+              "est": 99,
+              "actual": 98,
+              "date_shot": "18/10/2019"
+            },
+            {
+              "round": 4,
+              "est": 4,
+              "actual": 100,
+              "date_shot": "10/10/2019"
+            },
+            {
+              "round": 3,
+              "est": 3,
+              "actual": 100,
+              "date_shot": "10/10/2019"
+            }
+          ]
+        },
+        {
+          "name": "Dave Lemon",
+          "scores": [
+            {
+              "round": 1,
+              "est": 100,
+              "actual": 100,
+              "date_shot": "11/10/2019"
+            },
+            {
+              "round": 2,
+              "est": 100,
+              "actual": 100,
+              "date_shot": "12/10/2019"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

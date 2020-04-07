@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Manage Team{% endblock %}</h1>
+  {% if g.user %}
+    <a class="action" href="{{ url_for('team.team_create') }}">New</a>
+  {% endif %}
+{% endblock %}
+
+
+{% block content %}
+  {% if team_details %}
+  <div class="card mt-2">
+    <div class="card-header">
+      <h2 class="display-5">Team Details</h2>
+    </div>
+    <form method="post" id="team">
+    <div class="card-body">
+        <div class="form-group">
+          <label for="team_name">Team Name</label>
+          <input type="team_name" class="form-control" name="team_name" id="team_name" required value="{{team_details[0].team_name}}">
+        </div>
+        <div class="form-group">
+          <label for="team_size">Team Size</label>
+          <input type="number" class="form-control" name="team_size" id="team_size" required value="{{team_details[0].team_size}}">
+        </div>
+        <div class="form-group">
+          <label for="season">Season</label>
+            <select class="form-control member_selection" id="season" name="season">
+              <option value="" selected disabled>Please Select</option>
+                <option value="2019/20" {{ 'Selected' if team_details[0].season == '2019/20' }} >2019/20</option>
+                <option value="2020/21" {{ 'Selected' if team_details[0].season == '2020/21' }} >2020/21</option>
+            </select>
+        </div>
+    </div>
+    <div class="card-footer text-right">
+      <small class="text-muted">Be sure to save Team Details before updating members.</small><br>
+      <button class="btn btn-primary" type="submit">Update</button>
+    </div>
+      </form>
+  </div>
+  <!-- Members -->
+  <div class="card mt-2 mb-2">
+    <div class="card-header">
+      <h2 class="display-5 float-left">Team Members</h2>
+      <button class="btn btn-success float-right" type="button" data-toggle="modal" data-target="#add_new_member" role="button">Add Member</button>
+    </div>
+    <div class="card-body">
+        {% for member in team_details %}
+        {% if member.id %}
+        <div id="members">
+            <div class="form-row">
+            <div class="form-group col-md-8">
+                <label for="Member">Member</label>
+                <input class="form-control" type="text" value="{{member.first_name}} {{member.surname}}">
+            </div>
+              <div class="form-group col-md-2">
+                <label for="avg">Submitted Average</label>
+                  <div class="input-group">
+                  <input class="form-control round_input_field" id="avg" value="{{member.submitted_avg}}" type="number" step="0.01" onChange="show_save(this)">
+                  <div class="input-group-append d-none fade">
+                      <button class="btn btn-outline-secondary avg_save_btn" type="button" data-team-id="{{member.team_id}}" data-tm-id="{{member.tm_id}}">Save</button>
+                  </div>
+              </div>
+            </div>
+            <div class="form-group col-md-2">
+                <label>Action</label><br>
+                <a href="{{url_for('team.remove_member', uid=member.id, tid=team_details[0].team_id)}}" class="btn btn-danger btn-block">Remove</a>
+            </div>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+  </div>
+
+<!-- The Modal -->
+<div class="modal" id="add_new_member">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Add member to {{team_details[0].team_name}}</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <!-- Modal body -->
+      <form method="post" action="{{url_for('team.add_member', tid=team_details[0].team_id )}}">
+      <div class="modal-body">
+        <input type="hidden" name="tid" value="{{team_details[0].id}}"/>
+        <div class="form-group">
+            <label for="Member">Choose Memeber</label>
+          <select class="form-control member_selection" id="Member" name="member_selection">
+          <option value="" selected disabled>Please Select</option>
+          {% for user in users %}
+            <option value="{{user['id']|safe}}">{{ user['first_name']|safe }} {{ user['surname']|safe}}</option>
+          {% endfor %}
+        </select>
+        </div>
+          <div class="form-group">
+            <label for="SubAvg">Submitted Average</label>
+            <input type="number" class="form-control" name="sub_avg" id="SubAvg" placeholder="Enter Starting Average">
+          </div>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success">Add Member</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+        function show_save(input) {
+            $(input).toggleClass('round_input_field ');
+            $(input).next().toggleClass('d-none show');
+            return
+        }
+        $('.avg_save_btn').click(function(){
+            var btn = $(this).html('<span class="spinner-grow text-muted"></span>')
+            var team_id = btn.data('team-id');
+            var tm_id = btn.data('tm-id');
+            var ch_avg = btn.parent().siblings('input').val();
+            var get_url = '/teams/edit/'+ team_id +'/avg_ud/' + tm_id
+            $.ajax({
+                url: get_url,
+                type: 'GET',
+                data: {
+                    avg: ch_avg
+                },
+                success: function(r){
+                    response_handler(r, btn)
+                }
+            })
+        })
+        function response_handler(val, btn){
+            if (val == '{ status : success}') {
+                btn.html('<span class="fa fa-check"></span>');
+            } else {
+                btn.html('<span class="fa fa-close"></span>');
+            }
+
+        }
+</script>
+{% else %}
+  No Details provided
+{% endif %}
+
+{% endblock %}

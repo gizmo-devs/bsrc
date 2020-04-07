@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block header %}
+{% if g.user %}
+{% endif %}
+{% endblock %}
+{% block title %}Preview Data{% endblock %}
+
+{% block content %}
+<div class="table-responsive table-wrapper">
+<table class="table results">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th></th>
+        {% for round in data.data[0].rounds %}
+        <th>#{{loop.index}}</th>
+        {% endfor %}
+    </tr>
+    </thead>
+
+    <tbody>
+
+    {% for record in data.data %}
+    <tr>
+        <td>{{record.Name}}</td>
+        <td>Import</td>
+        {% for result in record.rounds%}
+            {% if result.import_score == result.db_result%}
+                <td class="table-success">{{result.import_score}}</td>
+            {% elif result.import_score == None %}
+                <td tabindex="0" class="table-danger text-danger" data-toggle="popover" data-trigger="focus" title="Import Error"
+                    data-content="The user '{{record.Name}}' could not be found within import file">Err</td>
+            {% elif result.db_result == None %}
+                <td tabindex="0" class="table-danger text-danger" data-toggle="popover" data-trigger="focus" title="Import Error - NCR"
+                    data-content="The database returned nothing for this round. Could the shooter have changed teams?">0</td>
+            {% else %}
+                <td class="table-warning clickable"
+                    data-round-num="{{result.round}}"
+                    data-import-val="{{result.import_score}}"
+                    data-db-val="{{result.db_result}}"
+                    data-db-score-id="{{result.score_id}}">{{result.import_score}}</td>
+            {% endif %}
+        {% endfor %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+<a href="{{url_for('import_data.index')}}" class="btn btn-primary">Finished</a>
+
+
+
+<div class="modal fade" id="scoreModal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Update Record</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+
+            <!-- Modal body -->
+            <form method="POST">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="score_id">Score ID:</label>
+                            <input class="form-control" type="number" name="score_id" id="score_id"
+                                   value=""/>
+                    </div>
+                    <div class="form-group">
+                        <label for="Imported">Import:</label>
+                        <div class="input-group">
+                            <input class="form-control" type="number" name="Imported" id="Imported" max="100" min="0"
+                                   value=""/>
+                            <div class="input-group-append">
+                                <span class="input-group-text">/100</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="Submitted">Submitted:</label>
+                        <div class="input-group">
+                            <input class="form-control" type="number" name="Submitted" id="Submitted" max="100" min="0"
+                                   value=""/>
+                            <div class="input-group-append">
+                                <span class="input-group-text">/100</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <input class="btn btn-success" type="submit" value="Next"/>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script>
+
+$(document).ready(function(){
+  $('[data-toggle="popover"]').popover();
+  $(".table-warning").click(function(){
+        $("#Imported").val($(this).data('import-val'));
+        $("#Submitted").val($(this).data('db-val'));
+        $("#score_id").val($(this).data('db-score-id'));
+        $("#scoreModal").modal("show");
+    });
+    // Auto reset form on close
+    $("#myModal").on('hidden.bs.modal', function () {
+        $(this).find('form')[0].reset();
+    });
+});
+</script>
+
+{% endblock %}

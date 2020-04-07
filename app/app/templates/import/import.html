@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block header %}
+{% if g.user %}
+{% endif %}
+{% endblock %}
+{% block title %}Upload File{% endblock %}
+
+{% block content %}
+<div class="d-flex mb-2">
+    <h1 class="mr-auto h3 mb-3">Choose a file to upload</h1>
+    <button class=" btn btn-info btn pull-right" data-toggle="collapse" data-target="#import_help">Help</button>
+</div>
+
+<div class="card collapse m-3" id="import_help">
+  <div class="card-body">
+    <h4 class="card-title">Import Help</h4>
+    {% if allow %}
+      <p class="card-text">The importer will only accept these file types:</p>
+      <ul>
+          {%for ext in allow %}
+          <li>.{{ext}}</li>
+          {% endfor %}
+      </ul>
+      {% endif %}
+    <p class="card-text">The importer is very precise; If the filenames do not match the the user value it will return
+        an error</p>
+
+      <p class="card-text">The importer has been designed to check against <b><u>current</u></b> records. If you are to be adding new records, you will need to do it via the competitions page. <a href="{{url_for('competition.index')}}" title="Add new results">Competitions Page</a>
+  </div>
+</div>
+<div class="row d-flex justify-content-center">
+<form method="post" enctype="multipart/form-data" class="w-75">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="alert alert-danger" role="alert">
+        {% for message in messages %}
+        <span>{{ message }}</span>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+    {{data}}
+    <div class="form-group">
+    <div class="custom-file">
+        <input type="file" class="custom-file-input" id="file" name="file">
+        <label class="custom-file-label" for="file">Choose file</label>
+    </div>
+    </div>
+    <input class="btn btn-lg btn-primary btn-block" type="submit" value="Upload">
+</form>
+</div>
+<script>
+    // Add the following code if you want the name of the file appear on select
+    $(".custom-file-input").on("change", function() {
+      var fileName = $(this).val().split("\\").pop();
+      $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    });
+
+</script>
+{% endblock %}

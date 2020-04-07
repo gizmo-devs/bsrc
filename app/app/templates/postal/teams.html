@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Manage Teams{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  {% for team in teams %}
+    <div class="card mt-2">
+    <div class="card-header">
+      <h2 class="display-5 float-left">{{ team['details']['team_name'] }} <small>{{team['details']['season']}}</small></h2>
+      {% if g.user.permission_level == "admin" %}
+      <div class="btn-group float-right" role="group" aria-label="Basic example">
+        <a class="btn btn-primary" role="button" href="{{ url_for('team.link_to_comp', team_id=team.details.id) }}">Link to Competition</a>
+        <a class="btn btn-primary" role="button" href="{{ url_for('team.team_edit', id=team.details.id) }}">Update Team</a>
+      </div>
+      {%endif%}
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col">
+        {% if team['details']['team_size'] %}
+          <div class="team">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Member</th>
+                  <th>Submitted Avg</th>
+                  <th>Current Average</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for user in team['members'] %}
+                {% set user_avg = team.avgs|selectattr('user_id', 'equalto', user.id) | map(attribute='curr_avg') | list %}
+                <tr>
+                  <td>{{loop.index}}</td>
+                  <td>{{user['first_name']}} {{user['surname']}}</td>
+                  <td>
+                    {% if user['submitted_avg'] not in ['None', '', None] %}
+                    {{"%.2f"|format(user['submitted_avg'])}}
+                    {% else %}
+                    -
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if user_avg[0] in ['None', '', None] or user['submitted_avg'] in ['None', '', None] %}
+                      -
+                    {% else %}
+                      {{ user_avg[0] }} <span class="pull-right {{'fa fa-caret-up text-success' if user['submitted_avg']|float < user_avg[0]|float else 'fa fa-caret-down text-danger'}}"></span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endif %}
+        </div>
+        <div class="col">
+          {% if team['active_comps'] %}
+          <ul class="list-group">
+            <li class="list-group-item list-group-item-secondary">
+              <h6>Linked Competitions</h6>
+            </li>
+            {% for active_comp in team['active_comps'] %}
+            <li class="list-group-item d-flex justify-content-between">
+              <span>{{active_comp['competition_name']}}</span> <a class="btn btn-primary btn-sm" role="button" href="{{ url_for('team.get_team_stats', team_id=team.details.id, comp_id=active_comp.id) }}">Graph</a></li>
+
+            {% endfor %}
+          </ul>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+    {% if not loop.last %}
+      <hr>
+    {% endif %}
+  {% endfor %}
+{% endblock %}

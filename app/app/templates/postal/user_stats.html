@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Stats{% endblock %}</h1>
+  {% if g.user.permission_level == "admin" %}
+<!--    <a class="action" href="{{ url_for('competition.comp_create') }}">New Competition</a>-->
+  {% endif %}
+<!--  <script src="{{ url_for('static', filename='js/jquery-ui.js') }}"></script>-->
+<!--  <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui.css') }}"/>-->
+{% endblock %}
+
+{% block content %}
+<h2>{{user.first_name + " " + user.surname}}</h2>
+<form method="get" action="{{url_for('user.user_stats', user_id=user.id)}}">
+    <select name="comp_id" class="custom-select" onchange="this.form.submit()">
+    <option {{'selected' if graph_data.comp_id|int == 0}} value="0">Last 12 cards</option>
+        {% for comp in user_comps %}
+        <option {{'selected' if graph_data.comp_id|int == comp.id|int}} value="{{comp.id}}">{{comp.name}}</option>
+        {% endfor %}
+    </select>
+</form>
+<div class="chart-container my-2">
+    <canvas class="" id="myChart"></canvas>
+</div>
+<h2>Current Averages</h2>
+<div class="row d-flex text-center mb-5">
+    <div class="card mx-2 flex-fill">
+      <div class="card-body">
+        <h4 class="card-title">6 Cards</h4>
+        <p class="card-text lead">{{'%0.2f'| format(avgs['six_cards']|float)}}</p>
+      </div>
+    </div>
+    <div class="card mx-2 flex-fill">
+      <div class="card-body">
+        <h4 class="card-title">12 Cards</h4>
+        <p class="card-text lead">{{'%0.2f'| format(avgs['twelve_cards']|float)}}</p>
+      </div>
+    </div>
+    <div class="card mx-2 flex-fill">
+      <div class="card-body">
+        <h4 class="card-title">4 Weeks</h4>
+        <p class="card-text lead">{{'%0.2f'| format(avgs['four_weeks']|float)}}</p>
+      </div>
+    </div>
+    <div class="card mx-2 flex-fill">
+      <div class="card-body">
+        <h4 class="card-title">2 Months</h4>
+        <p class="card-text lead">{{'%0.2f'| format(avgs['two_months']|float)}}</p>
+      </div>
+    </div>
+    </div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+<script>
+    //var rounds = 0
+    //var graph_data = JSON.parse({{graph_data}})
+    $(document).ready(function(){
+                var rounds = {{graph_data.rounds}};
+                var results = {{graph_data.results_arr}};
+                var avg = {{graph_data.average}};
+                console.log(avg);
+
+                var ctx = document.getElementById("myChart");
+                var myChart = new Chart(ctx, {
+                   // height: 380,
+                   type: 'line',
+                   data: {
+                      labels: rounds,
+                      datasets: [{
+                        data: results,
+                        lineTension: 0.2,
+                        backgroundColor: 'transparent',
+                        borderColor: '#007bff',
+                        borderWidth: 4,
+                        pointBackgroundColor: '#007bff',
+                        label: 'Score recorded'
+                      },
+                      { data: avg,
+                        lineTension: 0.2,
+                        backgroundColor: 'transparent',
+                        borderColor: '#20c997',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        label: 'Average'
+                        //pointBackgroundColor: '#007bff'
+                      }]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                      // responsive: true,
+                      layout: {
+                        padding: {
+                            top: 10
+                        }
+                      },
+                      title: {
+                            display: true,
+                            text: 'Last ' + rounds.length + ' rounds'
+                        },
+                        scales: {
+                        yAxes: [{
+                          ticks: {
+                            beginAtZero: false,
+                            stepSize: 1,
+                            max: Math.max.apply(null, results) + 1, //max value + 1
+                            min: Math.min.apply(null, results) - 1, //max value + 1
+                          }
+                        }]
+                      },
+                      legend: {
+                        display: true,
+                        position: 'bottom'
+                      }
+                    }
+                  });
+    });
+
+    </script>
+{% endblock %}

@@ -1,0 +1,4 @@
+Flask==1.1.1
+psycopg2-binary
+pandas
+xlrd >= 1.0.0

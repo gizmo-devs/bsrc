@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Due Dates{% endblock %}</h1>
+  {% if g.user.permission_level == "admin" %}
+
+  {% endif %}
+  <script src="{{ url_for('static', filename='js/jquery-ui.js') }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui.css') }}"/>
+{% endblock %}
+
+{% block content %}
+{% set chosen_comp_id = request.form.get('comp_sel') %}
+<form method="POST">
+    <div class="form-group">
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="comp_sel">Competitions:</label>
+            </div>
+            <select class="custom-select" id="comp_sel" name="comp_sel" onchange="this.form.submit()">
+            <option value="">Please Select</option>
+            {% for comp in comp_list %}
+                <option {{ 'selected' if (comp.id == chosen_comp_id|int) }} value="{{comp.id}}">{{comp.competition_name}}</option>
+            {% endfor %}
+            </select>
+        </div>
+    </div>
+</form>
+    {% if comp_details %}
+
+    <div class="container">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Round #</th>
+                <th>Due Date</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for detail in comp_details %}
+            <tr class="{{'text-danger' if today > detail.due_date}}">
+                <td>{{detail.num}}</td>
+                <td>{{detail.due_date.strftime('%d %b %Y')}}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+{% endblock %}

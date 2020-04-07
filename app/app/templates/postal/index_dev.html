@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Competitions{% endblock %}</h1>
+  {% if g.user.permission_level == "admin" %}
+
+  {% endif %}
+  <script src="{{ url_for('static', filename='js/jquery-ui.js') }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui.css') }}"/>
+{% endblock %}
+
+{% block content %}
+    {{data.competitons}}
+  {% for competition in data.competitions %}
+  {% set num_of_rounds = competition.info.rounds %}
+  <div class="card mt-2">
+    <div class="card-header">
+      <h2 class="display-5 float-left">{{competition.info.name}} <small>{{competition.info.season}}</small></h2>
+      {% if g.user %}
+      <span class="float-right"><a class="btn btn-info float-right" href="{{url_for('competition.comp_edit', id=competition.info.id)}}">edit</a></span>
+      {% endif %}
+    </div>
+    <div class="card-body">
+      {% for team in competition.teams %}
+      <h3>{{team.team_name}}</h3>
+        <div class="table-responsive">
+      <table class="table table-bordered results">
+          <thead>
+          <tr>
+            <th>Name</th>
+            {% for round in range(competition.info.rounds) %}
+              {% if competition.round_due_dates %}
+                 {% if date > competition.round_due_dates[loop.index0]%}
+                    {% set r_state = 'table-danger ' %}
+                 {% else %}
+                    {% set r_state = '' %}
+                 {% endif %}
+                <th class="" tabindex="0" data-toggle="popover" data-placement="top" data-trigger="focus" title="Round {{loop.index}} Due:" data-content="{{competition.round_due_dates[loop.index]}}">{{loop.index}}</th>
+              {% else %}
+                <th>{{loop.index}}</th>
+              {% endif %}
+            {% endfor %}
+            <th>Total</th>
+          </tr>
+          </thead>
+          <tbody>
+            {% for person in team.shooters %}
+              <tr>
+                <th scope="row">{{person.name}}</th>
+
+                {% for curr_round in range(num_of_rounds) if person.scores.round is defined %}
+                  {{ curr_round }}
+
+                {%else%}
+                  0
+                {%endfor%}
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% else %}
+    No data
+  {% endfor %}
+
+<!-- The Modal -->
+<div class="modal" id="add_score">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Round <span id="round_header_num"></span></h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <!-- Modal body -->
+      <form id="score_form" method="post" action="{{url_for('competition.result_save')}}">
+      <div class="modal-body">
+        <a href="#form_details" data-toggle="collapse" class="float-right">More</a>
+        <div id="form_details" class="collapse">
+          <label for="score_id">Score ID:</label>
+          <input class="form-control" type="text" name="score_id" id="score_id" value=""/>
+          <label for="competition_id">Competition ID:</label>
+          <input class="form-control" type="text" name="competition_id" id="competition_id" value=""/>
+          <label for="user_id">User ID:</label>
+          <input class="form-control" type="text" name="user_id" id="user_id" value=""/>
+          <label for="round">Round #:</label>
+          <input class="form-control" type="text" name="round" id="round" value=""/>
+        </div>
+        <div class="form-group">
+          <label for="shooter_name">Shooter Name:</label>
+          <input readonly class="form-control-plaintext" type="text" name="shooter_name" id="shooter_name" value=""/>
+        </div>
+        <div class="form-group">
+          <label for="estimated">Estmiated:</label>
+          <div class="input-group">
+            <input class="form-control" type="number" name="estimated" id="estimated" max="100" min="0" value=""/>
+            <div class="input-group-append">
+              <span class="input-group-text">/100</span>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="actual">Actual:</label>
+          <div class="input-group">
+            <input class="form-control" type="number" name="actual" id="actual" max="100" min="0" value=""/>
+            <div class="input-group-append">
+              <span class="input-group-text">/100</span>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="date_shot">Date Shot:</label>
+          <input class="form-control" type="text" name="date_shot" id="date_shot" value="" required/>
+        </div>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success">Add result</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+  $(function(){
+    //$('#date_shot').datepicker();
+    $('#date_shot').datepicker({
+      "setDate": $('#date_shot').val(),
+      dateFormat: 'yy-mm-dd',
+    });
+  });
+</script>
+{% endblock %}

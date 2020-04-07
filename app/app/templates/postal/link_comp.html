@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Create Competition{% endblock %}</h1>
+  {% if g.user %}
+    <a class="action" href="{{ url_for('competition.comp_create') }}">New</a>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  <form method="post">
+    <div class="form-group">
+      <label for="competition_name">Competition Name</label>
+      <input type="competition_name" class="form-control" name="competition_name" id="competition_name" required value="{{data['competition_name']}}">
+    </div>
+    <div class="form-group">
+      <label for="linked_team">Selected Team</label>
+      <select class="form-control" id="linked_team" name="linked_team">
+          <option value="" selected disabled>Please Select</option>
+            {% for team in teams %}
+              <option value="{{team.id}}">{{team.team_name}}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <input class="btn btn-primary" type="submit" value="Link">
+  </form>
+{% endblock %}

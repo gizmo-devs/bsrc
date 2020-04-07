@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Register{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <form method="post" class="form-signin">
+    <h1 class="h3 mb-3 font-weight-normal">Please fill in the fields below to register</h1>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-danger" role="alert">
+        {% for message in messages %}
+            <span>{{ message }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+    {% endwith %}
+    <div class="form-group">
+      <label for="firstname" class="sr-only">First Name</label>
+      <input type="text" class="form-control" value='{{request.form.get("firstname","")}}'
+             name="firstname" id="firstname" placeholder="First Name" required>
+    </div>
+    <div class="form-group">
+      <label for="surname" class="sr-only">Surname</label>
+      <input type="text" class="form-control" value='{{request.form.get("surname","")}}'
+             name="surname" id="surname" placeholder="Surname" required>
+    </div>
+    <div class="form-group">
+      <label for="username" class="sr-only">Username</label>
+      <input type="text" class="form-control {{'is-invalid' if 'username' in feedback}}"
+             value='{{request.form.get("username","")}}' name="username" id="username" placeholder="Username" required>
+    </div>
+    <div class="form-group">
+      <label for="password" class="sr-only">Password</label>
+      <input class="form-control {{'is-invalid' if 'password' in feedback}}" type="password" name="password" id="password" placeholder="Password" required>
+    </div>
+    <input class="btn btn-lg btn-primary btn-block" type="submit" value="Register">
+  </form>
+{% endblock %}

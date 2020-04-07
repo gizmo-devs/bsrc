@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Users{% endblock %}</h1>
+  {% if g.user.permission_level == "admin" %}
+<!--    <a class="action" href="{{ url_for('competition.comp_create') }}">New Competition</a>-->
+  {% endif %}
+<!--  <script src="{{ url_for('static', filename='js/jquery-ui.js') }}"></script>-->
+<!--  <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui.css') }}"/>-->
+{% endblock %}
+
+{% block content %}
+<div class="card mt-2">
+    <div class="card-header">
+      <h2 class="display-5 float-left">All users</h2>
+      {% if g.user %}
+      <a class="btn btn-primary float-right" href="{{url_for('user.create')}}">New User</a>
+      {% endif %}
+    </div>
+    <div class="card-body">
+    {% for table in tables %}
+        {{ table|safe }}
+    {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

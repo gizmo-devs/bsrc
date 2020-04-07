@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Manage Teams{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+<div class="chart-container my-2">
+    <canvas class="" id="myChart"></canvas>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+<script>
+    $(document).ready(function(){
+                var ctx = document.getElementById("myChart");
+                var myChart = new Chart(ctx, {
+                   // height: 380,
+                   type: 'line',
+                   data: {
+                      labels:
+                      [
+                        {%- for n in range(graph_data.graph_data[0].results|length) %}
+                          {{- n + 1 -}}{{- "," if not loop.last -}}
+                        {% endfor -%}
+                      ],
+                      datasets: [
+                        {% for data in graph_data.graph_data %}
+                          {
+                            data: {{data.results}},
+                            lineTension: 0.2,
+                            backgroundColor: 'transparent',
+                            borderColor: '{{data.colour}}',
+                            borderWidth: 3,
+                            pointBackgroundColor: '{{data.colour}}',
+                            label: '{{data.Name}}'
+                          }{{ "," if not loop.last }}
+                        {% endfor %}
+                      ]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                      // responsive: true,
+                      layout: {
+                        padding: {
+                            top: 10
+                        }
+                      },
+                      title: {
+                            display: true,
+                            text: 'Current Team Results'
+                        },
+                        scales: {
+                        yAxes: [{
+                          ticks: {
+                            beginAtZero: false,
+                            stepSize: 1 ,
+                            max: {{graph_data.max}} + 1, //100,
+                            min: {{graph_data.min}} - 1 //max value + 1
+                          }
+                        }]
+                      },
+                      legend: {
+                        display: true,
+                        position: 'bottom'
+                      }
+                    }
+                  });
+    });
+
+
+    </script>
+{% endblock %}

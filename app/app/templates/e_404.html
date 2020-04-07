@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  {% if g.user %}
+  {% endif %}
+{% endblock %}
+{% block title %}404{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+  <h1 class="display-4">Page not found</h1>
+  <p class="lead">Looks like this page doesnt exist.</p>
+  <hr class="my-4">
+  <p>Would you like to get back to the home page?</p>
+  <p class="lead">
+    <a class="btn btn-primary btn-lg" href="/" role="button">Back to home</a>
+  </p>
+</div>
+{% endblock %}

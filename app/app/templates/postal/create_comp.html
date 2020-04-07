@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Create Competition{% endblock %}</h1>
+  {% if g.user %}
+    <!-- <a class="action" href="{{ url_for('competition.comp_create') }}">New</a> -->
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="card mt-2">
+<div class="card-header">
+  <h2 class="display-5 float-left">Competition Details</h2>
+  </div>
+  <div class="card-body">
+    <form method="post">
+      <div class="form-group">
+        <label for="competition_name">Competition Name</label>
+        <input type="competition_name" class="form-control" name="competition_name" id="competition_name" required>
+      </div>
+      <div class="form-group">
+        <label for="season">Season</label>
+        <input type="text" class="form-control" name="season" id="season" required>
+      </div>
+      <input class="btn btn-primary" type="submit" value="Next">
+    </form>
+  </div>
+  </div>
+{% endblock %}

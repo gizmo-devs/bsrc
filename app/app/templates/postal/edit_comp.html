@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Edit Competition{% endblock %}</h1>
+  {% if g.user %}
+    <a class="action" href="{{ url_for('competition.comp_create') }}">New</a>
+  {% endif %}
+  <script src="{{ url_for('static', filename='js/jquery-ui.js') }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui.css') }}"/>
+{% endblock %}
+
+{% block content %}
+<div class="card mt-2 mb-2">
+    <div class="card-header">
+      <h2 class="display-5 float-left">Competition</h2>
+    </div>
+    <div class="card-body">
+      <form method="post">
+        <div class="form-group">
+          <label for="competition_name">Competition Name</label>
+          <input type="competition_name" class="form-control" name="competition_name" id="competition_name" required value="{{data.competition_name}}">
+        </div>
+        <div class="form-group">
+          <label for="season">Season</label>
+          <input type="text" class="form-control" name="season" id="season" required value="{{data.season}}">
+        </div>
+        <div class="form-group">
+          <label for="rounds">Number of Rounds</label>
+          <input type="number" class="form-control" name="rounds" id="rounds" required value="{{rounds|length}}" disabled>
+        </div>
+
+
+
+
+
+
+{#
+    {% for round in range(data.rounds) %}
+    {% set due = 'round{}_due'.format(loop.index) %}
+    <div class="form-group">
+      <label for="round{{loop.index}}_due">Round {{loop.index}} due</label>
+      <input class="form-control round_due" type="text" name="round{{loop.index}}_due" id="round{{loop.index}}_due" required value="{{ data.__getitem__(due) }}">
+    </div>
+    {% endfor %}
+#}
+    <input class="btn btn-primary" type="submit" value="Update">
+  </form>
+          </div>
+</div>
+  <div class="card mt-2 mb-2">
+    <div class="card-header">
+      <h2 class="display-5 float-left">Competition Rounds</h2>
+      <button class="btn btn-success float-right" type="button" data-toggle="modal" data-target="#new_round" role="button">Add Round</button>
+    </div>
+    <div class="card-body">
+      <div id="Comp_rounds">
+        {% for round in rounds %}
+        <label for="round">Round {{round.num}}</label>
+        <div class="input-group">
+          <input class="form-control" id="round" type="text" value="{{round.due_date}}" />
+          <div class="input-group-append">
+            <a href="{{url_for('competition.remove_round', comp_id=data.id, round_id=round.id)}}" class="btn btn-danger">Remove</a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+</div>
+
+<!-- The Modal -->
+<div class="modal" id="new_round">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Add a round to {{data.competition_name}}</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <!-- Modal body -->
+      <form method="post" action="{{url_for('competition.add_round', comp_id=data.id )}}">
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="new_round_num">Round Number:</label>
+          <input class="form-control" name="new_round_num" id="new_round_num" required type="number" name="Round_num" value="{{rounds|length + 1}}"/>
+        </div>
+        <div class="form-group">
+          <label for="new_round_num">Round {{rounds|length + 1}} due:</label>
+          <input class="form-control round_due" id="round_due_date" name="round_due_date" type="text" value=""/>
+        </div>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success">Add Round</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+  $(function(){
+    //$('.round_due')
+    $('.round_due').each(function(){
+      $(this).datepicker({
+        setDate: $(this).val(),
+        dateFormat: 'yy-mm-dd'
+      });
+    });
+    $('.round_due').datepicker(["setDate", $(this).val()],["option", "dateFormat", 'yy-mm-dd']);
+    $('.round_due').on('click', function(e) {
+            e.preventDefault();
+            $(this).attr("autocomplete", "off");
+    });
+  });
+</script>
+{% endblock %}
