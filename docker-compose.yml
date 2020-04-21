@@ -1,7 +1,18 @@
 ---
 version: '3'
 services:
-  alpine3.agent.postgres:
+  # alpine3.agent.postgres:
+  #   container_name: postgres-db
+  #   build:
+  #     context: .
+  #     dockerfile: ./agents/alpine3-agent-postgres/Dockerfile
+  #   ports:
+  #     - '5432:5432'
+  #   env_file:
+  #     - ./.env
+  #   volumes:
+  #     - './db-schema/init.db/:/docker-entrypoint-initdb.d/'
+  pi.agent.postgres:
     container_name: postgres-db
     build:
       context: .
@@ -15,7 +26,7 @@ services:
 
   webapp:
     depends_on:
-      - alpine3.agent.postgres
+      - pi.agent.postgres
     container_name: bsrc-webapp
     build:
       context: .
